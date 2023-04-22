@@ -1,0 +1,115 @@
+#include <16F72.h>
+
+void Robot_Forward()
+{
+   output_high(pin_C0);
+   output_low(pin_C1);
+   output_high(pin_C2);
+   output_low(pin_C3);
+}
+void Robot_Backward()
+{
+   output_low(pin_C0);
+   output_high(pin_C1);
+   output_low(pin_C2);
+   output_high(pin_C3);
+}
+void main()
+{  
+   int flag = 0;
+   output_high(pin_C4);   
+   delay_ms(800);
+   output_low(pin_C4);
+   delay_ms(800);  
+   output_high(pin_C4);   
+   delay_ms(800);
+   output_low(pin_C4);
+   delay_ms(800);   
+   int rf = 0;
+   int dir = 0;
+   int mov = 0;
+   int reached = 0;
+   
+    while(1)
+    {      
+         
+     if(!input(PIN_B1))
+         {
+               flag = 1;               
+                rf = 0;
+         }
+         else
+         {
+            rf++;
+            if(rf > 20)
+            {
+               flag = 0;
+               reached = 0;
+            }
+         }
+         
+         if((flag == 1) && (reached == 0))
+         {     
+               delay_ms(70);
+               output_high(pin_C4);  
+                     
+               if(!input(PIN_C7))
+               {
+                  delay_ms(700);
+                  while(1)
+                  {
+                     if(dir == 0)
+                     {
+                        if(input(PIN_A0))
+                        {
+                           Robot_Forward();  
+                           delay_ms(70);
+                           mov++;
+                        }
+                        else
+                        {
+                           Robot_Stop();                              
+                        }
+                        if(mov > 30)
+                        {                        
+                           Robot_Stop();  
+                           mov = 0;
+                           dir = 1;
+                           reached = 1;
+                           break;
+                        }
+                     }
+                     
+                     else 
+                     {
+                        if(input(PIN_B0))
+                        {
+                           Robot_backward();  
+                           delay_ms(70);
+                           mov++;
+                        }
+                        else
+                        {
+                           Robot_Stop();                              
+                        }
+                        
+                        if(mov > 30)
+                        {                        
+                           Robot_Stop();  
+                           mov = 0;
+                           dir = 0;
+                           reached = 1;
+                           break;
+                        }
+                     }
+                     
+                  }
+                  
+               }
+               
+         }
+            
+         delay_ms(100);
+         output_low(pin_C4);
+    }
+}
